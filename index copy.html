@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>StyloPay Links — Modern Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        :root {
+            --light-bg: url('https://images.unsplash.com/photo-1710162734135-8dc148f53abe?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8d2Vic2l0ZSUyMGJhY2tncm91bmR8ZW58MHx8MHx8fDA%3D');
+            --dark-bg: url('https://e1.pxfuel.com/desktop-wallpaper/37/754/desktop-wallpaper-for-website-backgrounds-itl-cat-websites-thumbnail.jpg');
+            
+            /* Define theme-specific colors */
+            --primary-color-light: #FFD700;
+            --secondary-color-light: #ac4620;
+            --primary-color-dark: #00FFFF;
+            --secondary-color-dark: #94ceed;
+
+            /* Set default colors */
+            --primary-color: var(--primary-color-light);
+            --secondary-color: var(--secondary-color-light);
+            --text-color-light: #fff;
+            --text-color-dark: #1a1a1a;
+            --input-bg-light: rgba(255, 255, 255, 0.1);
+            --input-border-light: rgba(255, 255, 255, 0.3);
+            --glass-bg-light: rgba(255, 255, 255, 0.04);
+            --glass-border-light: rgba(255, 255, 255, 0.08);
+            --glass-header: rgba(0, 0, 0, 0.45);
+        }
+
+        /* Dark mode overrides */
+        body.dark-mode {
+            --primary-color: var(--primary-color-dark);
+            --secondary-color: var(--secondary-color-dark);
+            --input-bg-light: rgba(255, 255, 255, 0.08);
+            --input-border-light: rgba(255, 255, 255, 0.2);
+            --glass-bg-light: rgba(255, 255, 255, 0.04);
+            --glass-border-light: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Base & Global Styles */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: var(--text-color-light);
+        }
+
+        .bg-fixed {
+            position: fixed;
+            inset: 0;
+            background-image: var(--light-bg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+            transition: background-image .45s ease;
+        }
+
+        body.dark-mode .bg-fixed {
+            background-image: var(--dark-bg);
+        }
+
+        /* Login Page */
+        #login-page {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.4s ease, transform 0.5s ease-in-out;
+        }
+
+        #login-page.hidden {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        #login-form {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            animation: fadeInForm 0.8s ease-in-out;
+        }
+
+        @keyframes fadeInForm {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .login-logo {
+            height: 60px;
+            width: auto;
+            border-radius: 6px;
+        }
+
+        #login-form h2 {
+            font-size: 28px;
+            margin: 0 0 20px;
+            color: var(--primary-color);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--input-border-light);
+            background: var(--input-bg-light);
+            color: var(--text-color-light);
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 250, 96, 0.3);
+        }
+
+        #login-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-color-dark);
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 211, 105, 0.4);
+        }
+
+        #login-message {
+            color: #e66;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+
+        /* Main Content & Header */
+        #main-container {
+            opacity: 0;
+            transform: scale(1.05);
+            transition: opacity 0.4s ease, transform 0.5s ease-in-out;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #main-container.visible {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        
+        #main-content-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding-top: 80px; /* Space for the fixed header */
+        }
+
+        .sticky-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: linear-gradient(180deg, var(--glass-header), rgba(0, 0, 0, 0.25));
+            backdrop-filter: blur(8px) saturate(120%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+        
+        .header-logos {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand h1 {
+            font-size: 25px;
+            margin: 0;
+            color: var(--primary-color);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-width: 520px;
+        }
+
+        .logo {
+            height: 48px;
+            width: auto;
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        }
+
+        /* Search Bar */
+        .search-and-filters {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        #searchInput {
+            width: 250px; /* Reduced width */
+            padding: 10px 40px 10px 14px;
+            border-radius: 28px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: rgba(33, 32, 32, 0.756);
+            color: var(--text-color-light);
+            transition: width .36s cubic-bezier(.2, .9, .3, 1), box-shadow .2s, background .2s;
+            backdrop-filter: blur(4px);
+            box-shadow: inset 0 6px 14px rgba(0, 0, 0, 0.35);
+        }
+        
+        #searchInput:focus {
+            background: rgba(255, 255, 255, 0.137);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        /* Magnifying Glass Icon Styling */
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            color: #fff;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            cursor: pointer;
+        }
+        
+        .search-wrap:hover .search-icon,
+        #searchInput:focus ~ .search-icon {
+            opacity: 1;
+        }
+
+        @media (max-width: 700px) {
+            #searchInput {
+                width: 100%;
+            }
+        }
+        
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .glass-btn {
+            display: inline-flex;
+            gap: 10px;
+            align-items: center;
+            padding: 9px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--glass-border-light);
+            background: linear-gradient(180deg, var(--glass-bg-light), rgba(255, 255, 255, 0.01));
+            color: var(--text-color-light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
+            backdrop-filter: blur(6px);
+        }
+
+        .glass-btn:hover, .glass-btn.active {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: var(--text-color-dark);
+            border: 1px solid var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 211, 105, 0.4);
+        }
+
+        .theme-icon {
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .theme-icon:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 28px auto;
+            padding: 0 18px 80px;
+        }
+
+        .category-block {
+            margin-bottom: 28px;
+        }
+
+        .category-title {
+            font-size: 20px;
+            color: var(--secondary-color);
+            font-weight: 700;
+            margin: 0 0 12px;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        /* Card Styling */
+        .card {
+            min-height: 92px;
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 8px;
+            transition: transform .18s ease, box-shadow .2s ease, background .2s;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(6px);
+        }
+
+        body:not(.dark-mode) .card {
+            background: rgba(0, 0, 0, 0.70);
+            color: var(--text-color-light);
+        }
+
+        body.dark-mode .card {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-color-light);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+        }
+
+        .card-head {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .card .icon {
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 18px;
+            color: var(--text-color-light);
+        }
+
+        .card .title {
+            font-weight: 700;
+            font-size: 15px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card .meta {
+            font-size: 13px;
+            color: #dff2ff;
+            opacity: 0.95;
+            word-break: break-word;
+        }
+        
+        .login-details {
+            margin-top: 8px;
+            font-size: 13px;
+        }
+        
+        .login-details p {
+            margin: 4px 0;
+            /* The Fix: Use Flexbox for perfect alignment */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .actions-left {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .action-link {
+            padding: 7px 10px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-color-light);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: background 0.15s;
+        }
+
+        .action-link:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .copy-btn {
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.25);
+            color: var(--text-color-light);
+            transition: background 0.2s;
+        }
+
+        body.dark-mode .copy-btn {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .id-card {
+            border-left: 4px solid #ff7043;
+        }
+        
+        .password-toggle {
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .password-toggle:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            .brand h1 {
+                font-size: 16px;
+                max-width: 200px;
+            }
+
+            .sticky-header {
+                padding: 12px;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-fixed" aria-hidden="true"></div>
+
+    <div id="login-page">
+        <form id="login-form">
+            <div class="login-logos">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReDtudppbuC0HybQwrhOQl-f8VdHBQK-q5zQ&s" alt="StyloPay Logo" class="login-logo">
+                <img src="https://media.licdn.com/dms/image/v2/C4E0BAQFlN0SDXfrV7g/company-logo_200_200/company-logo_200_200/0/1630624296642?e=2147483647&v=beta&t=4V-RScfKC4Ug0kvq2NQws_cRyYXvYJ5Gy1VQ-O5zgfE" alt="New Logo" class="login-logo">
+            </div>
+            <h2>Sign In</h2>
+            <div class="form-group">
+                <label for="username">User ID</label>
+                <input type="email" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <button id="login-btn">Sign In</button>
+            <div id="login-message"></div>
+        </form>
+    </div>
+
+    <div id="main-container">
+        <header class="sticky-header" role="banner">
+            <div class="brand" title="Important Links">
+                <div class="header-logos">
+                    <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReDtudppbuC0HybQwrhOQl-f8VdHBQK-q5zQ&s" alt="StyloPay Logo">
+                    <img class="logo" src="https://media.licdn.com/dms/image/v2/C4E0BAQFlN0SDXfrV7g/company-logo_200_200/company-logo_200_200/0/1630624296642?e=2147483647&v=beta&t=4V-RScfKC4Ug0kvq2NQws_cRyYXvYJ5Gy1VQ-O5zgfE" alt="New Logo">
+                </div>
+                <h1>Important Links</h1>
+            </div>
+
+            <div class="search-and-filters">
+                <div class="search-wrap" role="search">
+                    <input id="searchInput" type="search" placeholder="Search by category, portal or URL..." aria-label="Search links">
+                    <i id="searchIcon" class="fa-solid fa-magnifying-glass search-icon"></i>
+                </div>
+                <button id="documentsBtn" class="glass-btn filter-btn">Documents</button>
+                <button id="websitesBtn" class="glass-btn filter-btn">Websites</button>
+            </div>
+
+            <div class="header-actions" role="region" aria-label="Header actions">
+                <button id="exportExcelBtn" class="glass-btn" title="Export to Excel"><i class="fa-solid fa-file-excel"></i>&nbsp;Excel</button>
+                <button id="exportPdfBtn" class="glass-btn" title="Export to PDF"><i class="fa-solid fa-file-pdf"></i>&nbsp;PDF</button>
+                <button id="logoutBtn" class="glass-btn" title="Logout"><i class="fa-solid fa-right-from-bracket"></i>&nbsp;Logout</button>
+                <div id="themeToggle" class="theme-icon" title="Toggle theme">🌙</div>
+            </div>
+        </header>
+        <div id="main-content-wrapper">
+            <main id="mainContent" role="main" aria-live="polite"></main>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            data: [
+                { category: "CAAS Sandbox", portal: "User", url: "https://webapp-mcusd.stylopay.com/login", credentials: { id: "mmadmin@yopmail.com", password: "W@llet123" } },
+                { category: "CAAS Sandbox", portal: "Admin", url: "https://admin-v2.stylopay.com/login", credentials: { id: "mmadmin@yopmail.com", password: "W@llet123" } },
+                { category: "BAAS Sandbox", portal: "User", url: "https://baasusd-stylopay.vercel.app/login", credentials: { id: "dove335@yopmail.com", password: "W@llet123" } },
+                { category: "BAAS Sandbox", portal: "Admin", url: "https://adminbaas-stylopay.vercel.app/login", credentials: { id: "crmteamadminaccess01@yopmail.com", password: "W@llet123" } },
+                { category: "Master Card Features Overview", url: "https://drive.google.com/file/d/1aEifYfBTmzUySCyHgxTtvsf3Vgte31hC/view?usp=sharing" },
+                { category: "User KYC Guidelines", url: "https://drive.google.com/file/d/1JLBKdy2gX9DBH84JAAjJ-bdPm1ueLEpG/view?usp=sharing" },
+                { category: "Stylopay Policy documents", url: "https://drive.google.com/drive/folders/1FjidepJ0AxbsT3dYBbRS8Wh4Fw2ljEWv?usp=sharing" },
+                { category: "Stylo Pay Sandbox Tracker: Raise Tickets", url: "https://docs.google.com/spreadsheets/d/1Za8VbIcoOfSFC444uCtxrvXsxjEJv-m4diV7ycheiwg/edit?usp=sharing" },
+                { category: "Client Onboarding Flow Diagram", url: "https://drive.google.com/file/d/1oqlmgf3B1oKPpkDXqk6wLWw2kVLJ2Djf/view?usp=drive_link" },
+                { category: "CAAS Dashboard Manual", portal: "User", url: "https://drive.google.com/file/d/16-p8C5gIuivFnQhhT6M8GsRujlZLOoyo/view?usp=sharing" },
+                { category: "CAAS Dashboard Manual", portal: "Admin", url: "https://drive.google.com/file/d/1_fubhATWK2dulC_rt3X1pUpJG0mq52R2/view?usp=drive_link" },
+                { category: "CAAS Dashboard Video Manual", portal: "User", url: "https://drive.google.com/file/d/19ni3qxwpdto12h4Jy1d-AX0CbzwYYugN/view?usp=sharing" },
+                { category: "CAAS Dashboard Video Manual", portal: "Admin", url: "https://drive.google.com/file/d/1njwh7Wx54pRjh2mLxOuhLhoI_6V4Puc2/view?usp=sharing" },
+                { category: "BAAS Dashboard Manual", portal: "User", url: "https://docs.google.com/document/d/1_lEGRER6iccTPMME3Pvec_cpoDN0WJx8/edit?usp=sharing&ouid=113660852695724554536&rtpof=true&sd=true" },
+                { category: "BAAS Dashboard Manual", portal: "Admin", url: "https://docs.google.com/document/d/14hfi33W_8FlU4kmyNKPGjZ8cfR92Pv_r/edit?usp=sharing&ouid=113660852695724554536&rtpof=true&sd=true" },
+                { category: "Stylopay V2 API Documentation Revised (CAAS)", url: "https://documenter.getpostman.com/view/31769887/2sAYJAedNk" },
+                { category: "Stylopay V2 API Documentation Revised (BAAS)", url: "https://documenter.getpostman.com/view/31769887/2sAYJ4gzcX" },
+                { category: "Match Move Support", url: "https://matchmove.freshdesk.com/support/login" },
+                { category: "MSA Template", url: "https://docs.google.com/document/d/1FRTLzBvTUW8i2NMbmr6Nzp7u_RPxxcrK/edit?usp=sharing&ouid=113660852695724554536&rtpof=true&sd=true" },
+                { category: "BAAS Fetaures Doc", url: "https://docs.google.com/presentation/d/1tnaY9HTZ2bMhjWv77STr-Gq9PihXNfdZ/edit?usp=sharing&ouid=113660852695724554536&rtpof=true&sd=true" },
+                { category: "StyloPay Client Onboarding Flow Document", url: "https://drive.google.com/file/d/1-VHeBon6b9lLFhwOrVUnVaGETb6E5FDU/view?usp=drive_link" },
+                { category: "StyloPay Client onboarding process, CRM", url: "https://docs.google.com/presentation/d/18Ck4exSQzV6nWJXnuwv8a4rXVBztMWp5vuzNXL1H5lI/edit?usp=sharing" },
+                { category: "Sandbox Go Live Checklist Test Report Template", url: "https://docs.google.com/spreadsheets/d/1yH8nIU4BSPJsp9x4f8kASLflIHsJGDAA/edit?usp=sharing&ouid=113660852695724554536&rtpof=true&sd=true" },
+                { category: "StyloPay_MOM_Template", url: "https://docs.google.com/document/d/1ggwdfUE5Z7RVVjVwLE_j39gtkhZK6YSA8KFl9vbzn4k/edit?usp=sharing" },
+                { category: "Banking program Go Live Check List Template", url: "https://docs.google.com/spreadsheets/d/1woTg7bgygFc2Hf2QumyInsuwc9mVCmPw/edit?usp=sharing&ouid=113660852695724554536&rtpof=true&sd=true" },
+                { category: "Stylopay Internal Dashboard", url: "https://internal-dashboard-prod.vercel.app/login" },
+                { category: "Master Card Program Go Live Check List Template", url: "https://docs.google.com/spreadsheets/d/1HeZdC8FcrH89TI3PMdU3VmagaS_9billerMDDjDMsUs/edit?usp=sharing" },
+                { category: "StyloPay Client Tracker 2025", url: "Final 2024 Standard Pricing - C2C/B2B/B2C_BAAS" },
+                { category: "MasterCard Design Guidelines", url: "https://drive.google.com/file/d/1pHZWJqJjM1EtKZR-cIuvmAFSUYxt9dV6/view?usp=sharing" },
+                { category: "Stylopay MasterCard Program Country List", url: "https://docs.google.com/spreadsheets/d/1bqJ4VUGRFwt42nU85joCQpm-Yco9BoQV/edit?usp=sharing&ouid=113660852695724554536" },
+                { category: "Internal Dashboard Feature Request", url: "https://docs.google.com/spreadsheets/d/1jHN7YhIbuELd3SMp_bJOS-LmgejrqA6faZ7vw85MGkA/edit?usp=sharing" },
+                { category: "MasterCard program - UAT Sign off.doc Template", url: "https://docs.google.com/document/d/1em_P4waie8C2k1A-2CFTATmx7NfyB-E3/edit?usp=sharing&ouid=113660852695724554536" },
+                { category: "Logo Resize", url: "https://www.iloveimg.com/resize-image/resize-svg#resize-options,pixels" },
+                { category: "MasterCrad_production_API Access_Stylopay. Template", url: "https://docs.google.com/spreadsheets/d/1YBsIvNLPRUAHTDAGStdOsNPCKEbhdX4v/edit?usp=sharing&ouid=113660852695724554536" },
+                { category: "Stylopay API Stack: Program wise Listing", url: "https://docs.google.com/spreadsheets/d/1xrM_uqNfcMPBq2QegV_eo52Se_-NfBBrKmR1t2gsyEE/edit?usp=sharing" },
+                { category: "KYC/KYB queries_MM Progg", url: "https://docs.google.com/spreadsheets/d/16dAFxWGhofvC8KwXgbq2AbxXvlLPye3pigyd4WqSL-o/edit?usp=sharing" },
+                { category: "Loading fee Sheet", url: "https://docs.google.com/spreadsheets/d/1wf1TGdbfpxmq98O2K73Lq-tI6__h62ky2SoTKgWfp4I/edit?usp=sharing" },
+                { category: "Physcial Card Tracker - MC 2025", url: "https://docs.google.com/spreadsheets/d/1vn7HWjb3eRRC__OPUh2_G7bkZ_dCdMcZ/edit?gid=1699484611#gid=1699484611" },
+                { category: "Client Onboarding and Management Ver 1.0", url: "https://docs.google.com/presentation/d/11bbFoZ33Fxi31ZkfoQ_UeUwkRWhBtcWd8iTupd06JSM/edit?usp=sharing" },
+                { category: "Stylopay BAAS production", portal: "User", url: "https://raas-stylopay.vercel.app/" },
+                { category: "Stylopay BAAS production", portal: "Admin", url: "https://admin-va-portal.vercel.app/login" },
+                { category: "Stylopay CAAS production", portal: "User", url: "mcaas.stylopay.com" },
+                { category: "Stylopay CAAS production", portal: "Admin", url: "https://adminusd.stylopay.com/login" },
+                { category: "Infra Team - Ticketing", url: "https://stylopay-dev.atlassian.net/servicedesk/customer/portal/1" },
+                { category: "ZOQQ (Airwallex) Sandbox", url: "demo.zoqq.com", credentials: { id: "testlive01@yopmail.com", password: "Zoqq@2025" } },
+                { category: "ZOQQ (UQPAY) Sandbox", url: "https://sandbox-uq.vercel.app/", credentials: { id: "example21@yopmail.com", password: "Zoqq@2025" } },
+                { category: "Card Shipment tracker 2025", url: "https://docs.google.com/spreadsheets/d/1uu0WKzbzXRBBhaPF_ECWy8ndaj4j9eAO_8g_3Mqgc8U/edit?usp=sharing" },
+                { category: "EDD Link", url: "https://docs.google.com/forms/d/e/1FAIpQLScaq20qHA0IYcYOIKChSLJT93IwRROiIQ2bqTLvQg4-FJgN2w/viewform" },
+                { category: "ZOQQ Airwallex", url: "business.zoqq.com" },
+                { category: "ZOQQ UQPay", url: "banking.zoqq.com" },
+                { category: "ZOQQ country list", url: "https://www.zoqq.com/zoqq-active-corridor" },
+                { category: "Stylopay -Zoqq Ready Reconer 2025", url: "https://docs.google.com/spreadsheets/d/1AcgBerA-NHIBADKfTygJbgMYzHA8zUjS_mdV_Ojn0HI/edit?usp=sharing" },
+                { category: "ZOQQ Oboarding tracker: Compliance", url: "https://docs.google.com/spreadsheets/d/1XcqhR46DTfR4c70DuMhICDqW8i0KqM6t6R2fFeALaW4/edit?usp=sharing" },
+                { category: "Offline Invoice_Template", url: "https://docs.google.com/spreadsheets/d/1ntA1MMZUe0cTSawgpteXxh6k-n1dIjZV/edit?usp=sharing&ouid=113660852695724554536&rtpof=true&sd=true" },
+                { category: "ZOQQ Programme Go_Live Checklist Template V1.0 ", url: "https://docs.google.com/spreadsheets/d/14BQgEVbYl1ZbQgZcYHo7mOTngSKtTgMk/edit?usp=sharing&ouid=113660852695724554536&rtpof=true&sd=true" },
+                { category: "NeoDigital_Client_MSA Template", url: "https://docs.google.com/document/d/1u84hvGfJ42AWOPhICL2695bCrpOyHdv8/edit?usp=sharing&ouid=113660852695724554536&rtpof=true&sd=true" },
+                { category: "Stylopay_Client_NDA", url: "https://docs.google.com/document/d/1eBKwia57iA5eBwLbPtS1t7QYISIFmwYV/edit?usp=sharing&ouid=113660852695724554536&rtpof=true&sd=true" },
+                { category: "Fund Flow Diagram - Neo Digital", url: "https://docs.google.com/document/d/1Y8GSf-fPLokvUfRsAVWX2bNSWJjTUPPeToeoz5e7JbU/edit?usp=sharing" },
+                { category: "Hash DT card production", portal: "Admin", url: "https://admin.hashdt.com/" },
+                { category: "Hash DT card production", portal: "User", url: "https://carduser.hashdt.com/" },
+                { category: "Hash DT card Sandbox", portal: "Admin", url: "https://admin.sandbox.hashdt.com/", credentials: { id: "sayanid009@yopmail.com", password: "W@llet123" } },
+                { category: "Hash DT card Sandbox", portal: "User", url: "https://carduser.sandbox.hashdt.com", credentials: { id: "testcrm01@yopmail.com", password: "W@llet123" } },
+                { category: "Hash DT banking Sandbox", portal: "User", url: "https://demo-hashdt.vercel.app/dashboard", credentials: { id: "28august@yopmail.com", password: "W@llet123" } },
+                { category: "ZOQQ AWX banking production", portal: "User", url: "https://biz.zoqq.com/"},
+                { category: "ZOQQ AWX cardholder production", portal: "User", url: "https://carduser.zoqq.com/"},
+                { category: "ZOQQ AWX Production", portal: "Admin", url: "https://admin.zoqq.com/"},
+                { category: "ZOQQ AWX banking Sandbox", portal: "User", url: "https://user.sandbox.zoqq.com/", credentials: { id: "testlive01@yopmail.com", password: "W@llet123" } },
+                { category: "ZOQQ AWX cardholder Sandbox", portal: "User", url: "https://carduser.sandbox.zoqq.com/", credentials: { id: "testlive.cardholder03@yopmail.com", password: "W@llet123" } },
+                { category: "ZOQQ AWX Admin Sandbox", portal: "Admin", url: "https://admin.sandbox.zoqq.com/", credentials: { id: "testadmincrm01@yopmail.com", password: "W@llet123" } }
+            ],
+            icons: {
+                User: "fa-solid fa-user",
+                Admin: "fa-solid fa-user-shield",
+                default: "fa-solid fa-link"
+            },
+            
+            // --- UI Elements ---
+            elements: {
+                loginPage: document.getElementById('login-page'),
+                mainContainer: document.getElementById('main-container'),
+                loginBtn: document.getElementById('login-btn'),
+                logoutBtn: document.getElementById('logoutBtn'),
+                usernameInput: document.getElementById('username'),
+                passwordInput: document.getElementById('password'),
+                loginMessage: document.getElementById('login-message'),
+                searchInput: document.getElementById('searchInput'),
+                searchIcon: document.getElementById('searchIcon'),
+                exportExcelBtn: document.getElementById('exportExcelBtn'),
+                exportPdfBtn: document.getElementById('exportPdfBtn'),
+                themeToggle: document.getElementById('themeToggle'),
+                mainContent: document.getElementById('mainContent'),
+                documentsBtn: document.getElementById('documentsBtn'),
+                websitesBtn: document.getElementById('websitesBtn')
+            },
+
+            // --- Configuration ---
+            config: {
+                USER_ID: 'support@stylopay.com',
+                PASSWORD: 'W@llet123',
+                SESSION_TIMEOUT: 5 * 60 * 1000,
+                debounceDelay: 140,
+                activeFilter: null // 'documents' or 'websites'
+            },
+
+            // --- State and Timers ---
+            state: {
+                logoutTimer: null,
+                searchDebounce: null,
+            },
+
+            // --- Utility Functions ---
+            utils: {
+                escapeHtml(str = '') {
+                    return String(str).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+                        .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+                },
+                normalizeHref(raw) {
+                    if (!raw) return '#';
+                    if (raw.startsWith('mailto:') || raw.includes('@')) return raw.startsWith('mailto:') ? raw : 'mailto:' + raw;
+                    if (/^https?:\/\//i.test(raw)) return raw;
+                    if (/^[\w.-]+\.[a-z]{2,}(:\d+)?(\/.*)?$/i.test(raw)) return 'https://' + raw.replace(/^\/+/,'');
+                    return raw;
+                },
+                groupByCategory(arr) {
+                    return arr.reduce((acc, item) => {
+                        const cat = item.category || "Misc";
+                        if (!acc.has(cat)) acc.set(cat, []);
+                        acc.get(cat).push(item);
+                        return acc;
+                    }, new Map());
+                },
+                isDocument(url) {
+                    if (!url) return false;
+                    const docExtensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx', '.csv', '.txt'];
+                    const isGoogleDoc = /docs\.google\.com|drive\.google\.com|forms\.google\.com/.test(url);
+                    return isGoogleDoc || docExtensions.some(ext => url.endsWith(ext));
+                }
+            },
+
+            // --- Core Rendering Logic ---
+            render(items) {
+                const { mainContent } = this.elements;
+                mainContent.innerHTML = '';
+                const grouped = this.utils.groupByCategory(items);
+
+                for (const [category, itemsArr] of grouped.entries()) {
+                    const section = document.createElement('section');
+                    section.className = 'category-block';
+                    section.innerHTML = `<h2 class="category-title">${this.utils.escapeHtml(category)}</h2>`;
+
+                    const grid = document.createElement('div');
+                    grid.className = 'cards-grid';
+
+                    itemsArr.forEach(item => {
+                        const iconClass = (item.portal && this.icons[item.portal]) ? this.icons[item.portal] : this.icons.default;
+                        const urlText = this.utils.escapeHtml(item.url);
+                        const displayUrl = /^https?:\/\//i.test(item.url) ? `<a href="${this.utils.escapeHtml(item.url)}" target="_blank" rel="noopener" style="color:#bfe9ff">${urlText}</a>` : urlText;
+                        const isAccountCard = !!item.credentials;
+
+                        let credentialsHtml = '';
+                        if (isAccountCard) {
+                            credentialsHtml = `
+                                <div class="login-details">
+                                    <p>
+                                        <i class="fa-solid fa-id-card-clip"></i>
+                                        <strong>ID:</strong> ${this.utils.escapeHtml(item.credentials.id)}
+                                    </p>
+                                    <p>
+                                        <i class="fa-solid fa-lock"></i>
+                                        <strong>Password:</strong> <span class="password" data-value="${this.utils.escapeHtml(item.credentials.password)}">********</span>
+                                        <i class="fa-solid fa-eye-slash password-toggle" onclick="app.togglePassword(this)"></i>
+                                    </p>
+                                </div>
+                            `;
+                        }
+
+                        const cardHtml = `
+                            <article class="card ${isAccountCard ? 'id-card' : ''}">
+                                <div class="card-head">
+                                    <div class="icon">
+                                        <i class="${iconClass}"></i>
+                                    </div>
+                                    <div style="min-width: 0;">
+                                        <p class="title">${this.utils.escapeHtml(item.portal || item.category)}</p>
+                                        <p class="meta">${displayUrl}</p>
+                                    </div>
+                                </div>
+                                ${credentialsHtml}
+                                <div class="card-actions">
+                                    <div class="actions-left">
+                                        <a href="${this.utils.normalizeHref(item.url)}" class="action-link" target="_blank" rel="noopener">
+                                            <i class="fa-solid fa-up-right-from-square"></i>
+                                            Go to Link
+                                        </a>
+                                    </div>
+                                    <button class="copy-btn" onclick="app.copyToClipboard(this, '${this.utils.escapeHtml(item.url)}')">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                            </article>
+                        `;
+                        grid.innerHTML += cardHtml;
+                    });
+                    section.appendChild(grid);
+                    mainContent.appendChild(section);
+                }
+            },
+            
+            // --- New Export Functions ---
+            exportToExcel() {
+                const wsData = this.data.map(item => {
+                    const row = {
+                        Category: item.category,
+                        Portal: item.portal || '',
+                        URL: item.url
+                    };
+                    if (item.credentials) {
+                        row['User ID'] = item.credentials.id;
+                        row['Password'] = item.credentials.password;
+                    }
+                    return row;
+                });
+
+                const ws = XLSX.utils.json_to_sheet(wsData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "StyloPay Links");
+                XLSX.writeFile(wb, "StyloPay-Links.xlsx");
+                
+                console.log("Exported to Excel!");
+            },
+
+            exportToPdf() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const tableData = this.data.map(item => {
+                    const row = [
+                        item.category,
+                        item.portal || '',
+                        item.url
+                    ];
+                    if (item.credentials) {
+                        row.push(item.credentials.id);
+                        row.push(item.credentials.password);
+                    } else {
+                        row.push('');
+                        row.push('');
+                    }
+                    return row;
+                });
+                
+                const headers = [['Category', 'Portal', 'URL', 'User ID', 'Password']];
+
+                doc.autoTable({
+                    head: headers,
+                    body: tableData,
+                    startY: 20,
+                    headStyles: { fillColor: [6, 73, 114], fontStyle: 'bold' },
+                    columnStyles: {
+                        0: {cellWidth: 'auto'},
+                        1: {cellWidth: 'auto'},
+                        2: {cellWidth: 'auto'},
+                        3: {cellWidth: 'auto'},
+                        4: {cellWidth: 'auto'}
+                    },
+                    margin: { top: 10, left: 10, right: 10, bottom: 10 },
+                    styles: {fontSize: 8, overflow: 'linebreak', cellPadding: 2},
+                    theme: 'striped',
+                    didDrawPage: function(data) {
+                        doc.text("StyloPay Links Report", data.settings.margin.left, 15);
+                    }
+                });
+
+                doc.save('StyloPay-Links.pdf');
+                console.log("Exported to PDF!");
+            },
+
+            // --- Other App Logic ---
+            copyToClipboard(btn, text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalIcon = btn.innerHTML;
+                    btn.innerHTML = `<i class="fa-solid fa-check"></i>`;
+                    btn.style.color = 'var(--primary-color)';
+                    setTimeout(() => {
+                        btn.innerHTML = originalIcon;
+                        btn.style.color = 'var(--text-color-light)';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            },
+
+            togglePassword(iconElement) {
+                const passwordSpan = iconElement.previousElementSibling;
+                const isHidden = passwordSpan.textContent === '********';
+                const originalValue = passwordSpan.getAttribute('data-value');
+                
+                if (isHidden) {
+                    passwordSpan.textContent = originalValue;
+                    iconElement.classList.remove('fa-eye-slash');
+                    iconElement.classList.add('fa-eye');
+                } else {
+                    passwordSpan.textContent = '********';
+                    iconElement.classList.remove('fa-eye');
+                    iconElement.classList.add('fa-eye-slash');
+                }
+            },
+
+            filter(type) {
+                this.config.activeFilter = type;
+                const filteredData = type ? this.data.filter(item => {
+                    const isDoc = this.utils.isDocument(item.url);
+                    return type === 'documents' ? isDoc : !isDoc;
+                }) : this.data;
+                this.render(filteredData);
+            },
+            
+            search() {
+                const query = this.elements.searchInput.value.toLowerCase();
+                const filteredData = this.data.filter(item => {
+                    const matchesQuery = Object.values(item).some(value => 
+                        (typeof value === 'string' && value.toLowerCase().includes(query)) ||
+                        (typeof value === 'object' && value !== null && Object.values(value).some(v => typeof v === 'string' && v.toLowerCase().includes(query)))
+                    );
+                    
+                    const isDoc = this.utils.isDocument(item.url);
+                    const matchesFilter = !this.config.activeFilter ||
+                                        (this.config.activeFilter === 'documents' && isDoc) ||
+                                        (this.config.activeFilter === 'websites' && !isDoc);
+                                        
+                    return matchesQuery && matchesFilter;
+                });
+                this.render(filteredData);
+            },
+            
+            toggleTheme() {
+                document.body.classList.toggle('dark-mode');
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                this.elements.themeToggle.innerHTML = isDarkMode ? '☀️' : '🌙';
+                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            },
+            
+            checkSession() {
+                const lastLogin = localStorage.getItem('lastLogin');
+                if (!lastLogin || (Date.now() - lastLogin > this.config.SESSION_TIMEOUT)) {
+                    this.logout();
+                } else {
+                    this.elements.loginPage.classList.add('hidden');
+                    this.elements.mainContainer.classList.add('visible');
+                    this.resetLogoutTimer();
+                    this.render(this.data);
+                }
+            },
+            
+            resetLogoutTimer() {
+                clearTimeout(this.state.logoutTimer);
+                this.state.logoutTimer = setTimeout(() => {
+                    this.logout();
+                }, this.config.SESSION_TIMEOUT);
+            },
+            
+            logout() {
+                localStorage.removeItem('lastLogin');
+                clearTimeout(this.state.logoutTimer);
+                this.elements.mainContainer.classList.remove('visible');
+                this.elements.loginPage.classList.remove('hidden');
+                this.elements.usernameInput.value = '';
+                this.elements.passwordInput.value = '';
+                this.elements.loginMessage.textContent = '';
+                this.elements.searchInput.value = '';
+                this.render(this.data);
+            },
+            
+            setupEventListeners() {
+                // Login Form
+                this.elements.loginBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (this.elements.usernameInput.value === this.config.USER_ID && this.elements.passwordInput.value === this.config.PASSWORD) {
+                        localStorage.setItem('lastLogin', Date.now());
+                        this.elements.loginPage.classList.add('hidden');
+                        this.elements.mainContainer.classList.add('visible');
+                        this.resetLogoutTimer();
+                        this.render(this.data);
+                    } else {
+                        this.elements.loginMessage.textContent = 'Invalid username or password.';
+                    }
+                });
+
+                // Logout Button
+                this.elements.logoutBtn.addEventListener('click', () => this.logout());
+                
+                // User activity for session timeout
+                document.addEventListener('mousemove', () => this.resetLogoutTimer());
+                document.addEventListener('keypress', () => this.resetLogoutTimer());
+                
+                // Search
+                this.elements.searchInput.addEventListener('input', () => {
+                    clearTimeout(this.state.searchDebounce);
+                    this.state.searchDebounce = setTimeout(() => {
+                        this.search();
+                    }, this.config.debounceDelay);
+                });
+                
+                // Theme Toggle
+                this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
+
+                // Filter Buttons
+                this.elements.documentsBtn.addEventListener('click', () => {
+                    this.elements.documentsBtn.classList.toggle('active');
+                    this.elements.websitesBtn.classList.remove('active');
+                    const active = this.elements.documentsBtn.classList.contains('active');
+                    this.filter(active ? 'documents' : null);
+                });
+                
+                this.elements.websitesBtn.addEventListener('click', () => {
+                    this.elements.websitesBtn.classList.toggle('active');
+                    this.elements.documentsBtn.classList.remove('active');
+                    const active = this.elements.websitesBtn.classList.contains('active');
+                    this.filter(active ? 'websites' : null);
+                });
+
+                // **NEW: Export Buttons**
+                this.elements.exportExcelBtn.addEventListener('click', () => this.exportToExcel());
+                this.elements.exportPdfBtn.addEventListener('click', () => this.exportToPdf());
+            },
+
+            init() {
+                const storedTheme = localStorage.getItem('theme');
+                if (storedTheme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    this.elements.themeToggle.innerHTML = '☀️';
+                }
+                this.checkSession();
+                this.setupEventListeners();
+                this.filter(null); // Initial render of all items
+            }
+        };
+
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>
